@@ -7,7 +7,8 @@ rules-based keyword search, an LLM with no vector index (all policies in the pro
 and an LLM with a vector index (only the three closest policies in the prompt).
 A Slack bot uses the vector-index method.
 
-Live site: (add link)
+Live site: https://policy-assistant-knut.streamlit.app/
+Repository: https://github.com/knbarka-beep/policy-assistant
 
 ## Files
 
