@@ -1,0 +1,27 @@
+question,expected_policy,type
+How many vacation days do I get per year?,Vacation Policy,answerable
+Can I carry unused vacation days over to next year?,Vacation Policy,answerable
+How many days a week can I work from home?,Remote Work Policy,answerable
+Do I need approval before spending 800 dollars on a business expense?,Expense Approval Policy,answerable
+How long do I have to hand in receipts after a business trip?,Travel Reimbursement Policy,answerable
+How often do I have to change my password?,Password Policy,answerable
+How long is paternity leave?,Parental Leave Policy,answerable
+My grandmother died. How much time off can I take?,Bereavement Leave Policy,answerable
+Can I work from Spain for two weeks?,Work From Abroad Policy,answerable
+How long is the probation period for new hires?,Probation Period Policy,answerable
+Who is allowed to talk to journalists?,Media Contact Policy,answerable
+What should I do if I think my laptop has been hacked?,Security Incident Policy,answerable
+Can I report unethical behaviour without giving my name?,Whistleblower Policy,answerable
+What should I wear to the office?,Dress Code Policy,answerable
+Can I use my work laptop to shop online in my lunch break?,Laptop Usage Policy|Internet Usage Policy,answerable
+My printer is broken. How do I get it fixed?,Helpdesk Ticket Policy|Support Ticket Policy,answerable
+How many sick days do I get per year?,Sick Leave Policy,detail_missing
+How much will the company pay towards my master's degree?,Tuition Assistance Policy|Training Reimbursement Policy,detail_missing
+What is the maximum value of a gift I can accept from a client?,Client Gift Policy,detail_missing
+Is parental leave paid at full salary?,Parental Leave Policy,detail_missing
+What is the daily meal allowance when travelling in Germany?,NONE,unanswerable
+Can I bring my dog to the office?,NONE,unanswerable
+How much does the company contribute to my pension?,NONE,unanswerable
+Are smoking breaks allowed during working hours?,NONE,unanswerable
+Am I allowed to date a colleague?,NONE,unanswerable
+What is my notice period if I resign?,NONE,unanswerable
