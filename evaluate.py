@@ -2,6 +2,7 @@
 
     py evaluate.py              three methods
     py evaluate.py --baseline   also an LLM that gets no policy data at all
+    py evaluate.py --rescore    redo the support check on saved answers without calling Gemini
 
 Writes results/eval_results.csv (one row per question and method),
 results/summary.csv and results/per_question.csv (the two tables on the website).
@@ -10,8 +11,6 @@ import argparse
 import csv
 import time
 from pathlib import Path
-
-from google import genai
 
 import policy_engine as pe
 
@@ -61,7 +60,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--baseline", action="store_true", help="also run an LLM with no policy data")
     parser.add_argument("--pause", type=float, default=4.0, help="seconds between questions (free-tier rate limit)")
+    parser.add_argument("--rescore", action="store_true", help="redo the support check on saved answers, no API calls")
     args = parser.parse_args()
+    if args.rescore:
+        rescore()
+        return
+
+    from google import genai  # imported here so --rescore works without the SDK
 
     client = genai.Client(api_key=pe.get_secret("GEMINI_API_KEY"))
     policies = pe.load_policies()
@@ -91,29 +96,59 @@ def main():
                 print(f"   {pe.METHOD_NAMES[key]} failed: {str(e)[:120]}")
         time.sleep(args.pause)
 
+    write_outputs(rows, questions, [pe.METHOD_NAMES[k] for k, _ in methods])
+
+
+FIELDS = ["question", "type", "expected", "method", "answer", "cited_policy", "declined", "right_policy",
+          "declined_correctly", "invented_details", "unsupported", "support_check", "seconds",
+          "tokens_total", "model", "error"]
+
+
+def rescore():
+    """Re-run only the support check on saved answers, without calling Gemini again."""
+    policies = {p["title"]: p for p in pe.load_policies()}
+    with open(pe.ROOT / "data" / "eval_questions.csv", newline="", encoding="utf-8") as f:
+        questions = list(csv.DictReader(f))
+    with open(RESULTS / "eval_results.csv", newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    for r in rows:
+        if r.get("error"):
+            continue
+        for key in ("declined", "right_policy", "declined_correctly"):
+            r[key] = r[key] == "True"
+        r["seconds"] = float(r["seconds"])
+        r["tokens_total"] = int(r["tokens_total"])
+        cited = [policies[t] for t in r["cited_policy"].split("; ") if t in policies]
+        support = pe.support_check({"declined": r["declined"], "policies": cited, "answer": r["answer"]}, r["question"])
+        answerable = r["expected"] != "NONE"
+        r["invented_details"] = support["invented"]
+        r["unsupported"] = support["unsupported"] or ((not answerable) and not r["declined"])
+        r["support_check"] = support["label"]
+    methods = list(dict.fromkeys(r["method"] for r in rows))
+    write_outputs(rows, questions, methods)
+
+
+def write_outputs(rows, questions, method_names):
     RESULTS.mkdir(exist_ok=True)
-    fields = ["question", "type", "expected", "method", "answer", "cited_policy", "declined", "right_policy",
-              "declined_correctly", "invented_details", "unsupported", "support_check", "seconds",
-              "tokens_total", "model", "error"]
     with open(RESULTS / "eval_results.csv", "w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=fields)
+        w = csv.DictWriter(f, fieldnames=FIELDS)
         w.writeheader()
         w.writerows(rows)
 
     n_answerable = sum(1 for q in questions if q["expected_policy"] != "NONE")
     n_none = len(questions) - n_answerable
     summary = []
-    for key, _ in methods:
-        name = pe.METHOD_NAMES[key]
+    for name in method_names:
         ok = [r for r in rows if r["method"] == name and not r.get("error")]
         failed = sum(1 for r in rows if r["method"] == name and r.get("error"))
+        times = sorted(r["seconds"] for r in ok) or [0]
         summary.append({
             "Method": name,
             f"Right policy (of {n_answerable})": sum(r["right_policy"] for r in ok),
             f"Declined correctly (of {n_none})": sum(r["declined_correctly"] for r in ok),
             f"Invented details (of {len(questions)})": sum(r["invented_details"] for r in ok),
             f"Unsupported answers (of {len(questions)})": sum(r["unsupported"] for r in ok),
-            "Avg response time (s)": pe.fmt_seconds(sum(r["seconds"] for r in ok) / max(len(ok), 1)),
+            "Median response time (s)": pe.fmt_seconds(times[len(times) // 2]),
             "Avg tokens per question": pe.fmt_int(round(sum(r["tokens_total"] for r in ok) / max(len(ok), 1))),
             "Failed calls": failed,
         })
@@ -122,12 +157,11 @@ def main():
         w.writeheader()
         w.writerows(summary)
 
-    # Wide table: one row per question, one column per method.
     per_q = []
     for q in questions:
-        line = {"Question": q["question"], "Expected policy": q["expected_policy"].replace("|", " or ").replace("NONE", "None (should decline)")}
-        for key, _ in methods:
-            name = pe.METHOD_NAMES[key]
+        line = {"Question": q["question"],
+                "Expected policy": q["expected_policy"].replace("|", " or ").replace("NONE", "None (should decline)")}
+        for name in method_names:
             r = next((x for x in rows if x["question"] == q["question"] and x["method"] == name), None)
             if r is None or r.get("error"):
                 cell = "Error"

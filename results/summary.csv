@@ -1,0 +1,4 @@
+Method,Right policy (of 20),Declined correctly (of 6),Invented details (of 26),Unsupported answers (of 26),Median response time (s),Avg tokens per question,Failed calls
+Rules-based search,19,3,0,3,"0,00",0,0
+"LLM, no vector index",20,6,0,0,"10,14",2.267,0
+LLM with vector index,20,6,0,0,"8,19",295,0

@@ -1,0 +1,27 @@
+Question,Expected policy,Rules-based search,"LLM, no vector index",LLM with vector index
+How many vacation days do I get per year?,Vacation Policy,Vacation Policy,Vacation Policy,Vacation Policy
+Can I carry unused vacation days over to next year?,Vacation Policy,Vacation Policy,Vacation Policy,Vacation Policy
+How many days a week can I work from home?,Remote Work Policy,Remote Work Policy,Remote Work Policy,Remote Work Policy
+Do I need approval before spending 800 dollars on a business expense?,Expense Approval Policy,Expense Approval Policy,Expense Approval Policy,Expense Approval Policy
+How long do I have to hand in receipts after a business trip?,Travel Reimbursement Policy,Travel Reimbursement Policy,Travel Reimbursement Policy,Travel Reimbursement Policy
+How often do I have to change my password?,Password Policy,Password Policy,Password Policy,Password Policy
+How long is paternity leave?,Parental Leave Policy,Parental Leave Policy,Parental Leave Policy,Parental Leave Policy
+My grandmother died. How much time off can I take?,Bereavement Leave Policy,Bereavement Leave Policy,Bereavement Leave Policy,Bereavement Leave Policy
+Can I work from Spain for two weeks?,Work From Abroad Policy,Work From Abroad Policy,Work From Abroad Policy,Work From Abroad Policy
+How long is the probation period for new hires?,Probation Period Policy,Probation Period Policy,Probation Period Policy,Probation Period Policy
+Who is allowed to talk to journalists?,Media Contact Policy,Social Media Policy,Media Contact Policy,Media Contact Policy
+What should I do if I think my laptop has been hacked?,Security Incident Policy,Security Incident Policy,Security Incident Policy,Security Incident Policy
+Can I report unethical behaviour without giving my name?,Whistleblower Policy,Whistleblower Policy,Whistleblower Policy,Whistleblower Policy
+What should I wear to the office?,Dress Code Policy,Dress Code Policy,Dress Code Policy,Dress Code Policy; Office Access Policy
+Can I use my work laptop to shop online in my lunch break?,Laptop Usage Policy or Internet Usage Policy,Internet Usage Policy,Laptop Usage Policy,Laptop Usage Policy
+My printer is broken. How do I get it fixed?,Helpdesk Ticket Policy or Support Ticket Policy,Helpdesk Ticket Policy,Helpdesk Ticket Policy,Helpdesk Ticket Policy
+How many sick days do I get per year?,Sick Leave Policy,Sick Leave Policy,Sick Leave Policy,Sick Leave Policy
+How much will the company pay towards my master's degree?,Tuition Assistance Policy or Training Reimbursement Policy,Tuition Assistance Policy,Tuition Assistance Policy,Tuition Assistance Policy
+What is the maximum value of a gift I can accept from a client?,Client Gift Policy,Client Gift Policy,Client Gift Policy,Client Gift Policy
+Is parental leave paid at full salary?,Parental Leave Policy,Parental Leave Policy,Parental Leave Policy,Parental Leave Policy
+What is the daily meal allowance when travelling in Germany?,None (should decline),Work From Abroad Policy (unsupported),Declined,Declined
+Can I bring my dog to the office?,None (should decline),Declined,Declined,Declined
+How much does the company contribute to my pension?,None (should decline),Declined,Declined,Declined
+Are smoking breaks allowed during working hours?,None (should decline),Flexible Hours Policy (unsupported),Declined,Declined
+Am I allowed to date a colleague?,None (should decline),Declined,Declined,Declined
+What is my notice period if I resign?,None (should decline),Probation Period Policy (unsupported),Declined,Declined

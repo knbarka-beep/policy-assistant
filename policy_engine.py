@@ -175,7 +175,7 @@ def rules_based(question, rules_index):
         "retrieved": [(p, round(s, 2)) for s, p in ranked[:TOP_K]],
     }
     result["seconds"] = time.perf_counter() - start
-    result["support"] = support_check(result)
+    result["support"] = support_check(result, question)
     return result
 
 
@@ -207,6 +207,7 @@ def _generate(client, system, contents):
                     system_instruction=system,
                     temperature=0,
                     response_mime_type="application/json",
+                    automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
                 ),
             )
             u = resp.usage_metadata
@@ -229,7 +230,7 @@ def _parse_json(text):
         return json.loads(m.group(0)) if m else {"answer": text or "", "policy_ids": [], "supported": False}
 
 
-def _finish(result, data, policies_by_id, start):
+def _finish(result, data, policies_by_id, start, question=""):
     answer = str(data.get("answer", "")).strip()
     ids = [int(i) for i in data.get("policy_ids", []) if str(i).isdigit() and int(i) in policies_by_id]
     result["answer"] = answer
@@ -237,7 +238,7 @@ def _finish(result, data, policies_by_id, start):
     result["cited_missing"] = []
     result["declined"] = (not data.get("supported", False)) or answer.startswith(NOT_FOUND)
     result["seconds"] = time.perf_counter() - start
-    result["support"] = support_check(result)
+    result["support"] = support_check(result, question)
     return result
 
 
@@ -258,13 +259,13 @@ def llm_no_index(client, question, policies, mode=None):
         result["cited_missing"] = [t for t in titles if t.lower() not in by_title]
         result["declined"] = not data.get("supported", True)
         result["seconds"] = time.perf_counter() - start
-        result["support"] = support_check(result)
+        result["support"] = support_check(result, question)
         return result
 
     contents = f"Company policies:\n{policy_block(policies)}\n\nQuestion: {question}"
     text, tokens, model = _generate(client, SYSTEM_WITH_POLICIES, contents)
     result = {"method": "no_index", "tokens": tokens, "model": model, "retrieved": []}
-    return _finish(result, _parse_json(text), by_id, start)
+    return _finish(result, _parse_json(text), by_id, start, question)
 
 
 # ---------- method 3: LLM with vector index ----------
@@ -311,7 +312,7 @@ def llm_with_index(client, question, policies, index):
     contents = f"Company policies:\n{policy_block([p for p, _ in retrieved])}\n\nQuestion: {question}"
     text, tokens, model = _generate(client, SYSTEM_WITH_POLICIES, contents)
     result = {"method": "index", "tokens": tokens, "model": model, "retrieved": retrieved, "embedding_calls": 1}
-    return _finish(result, _parse_json(text), {p["id"]: p for p, _ in retrieved}, start)
+    return _finish(result, _parse_json(text), {p["id"]: p for p, _ in retrieved}, start, question)
 
 
 # ---------- support check ----------
@@ -330,11 +331,11 @@ def _numbers(text):
     return set(re.findall(r"\d+(?:\.\d+)?", text))
 
 
-def support_check(result):
+def support_check(result, question=""):
     """Deterministic check of whether an answer is backed by the policy database.
 
     Flags answers that cite no policy that exists, and answers that contain numbers
-    (days, amounts, limits) that do not appear in the policies they cite.
+    (days, amounts, limits) that appear neither in the policies they cite nor in the question.
     """
     if result["declined"]:
         return {"label": "Declined, no supporting policy", "invented": False, "unsupported": False}
@@ -343,7 +344,7 @@ def support_check(result):
     if result.get("cited_missing"):
         missing = ", ".join(result["cited_missing"])
         return {"label": f"Unsupported: cites a policy not in the database ({missing})", "invented": True, "unsupported": True}
-    source_numbers = set().union(*(_numbers(p["text"]) for p in result["policies"]))
+    source_numbers = set().union(*(_numbers(p["text"]) for p in result["policies"])) | _numbers(question)
     extra = sorted(_numbers(result["answer"]) - source_numbers)
     if extra:
         return {

@@ -135,7 +135,7 @@ with tab_ask:
             show_result(col, r)
     st.caption(
         "Support check: an answer counts as unsupported if it cites no policy that exists in the database, "
-        "or if it contains a number (days, amounts, limits) that is not written in the policy it cites."
+        "or if it contains a number (days, amounts, limits) that appears neither in the policy it cites nor in the question."
     )
 
 with tab_compare:
