@@ -6,8 +6,9 @@ Same format as the other Assignment 1 cases.
 
 | Date | Task | Time (h) |
 |---|---|---|
-| 28.09.2026 | Case read-through, engine, website, evaluation script and Slack bot (built with Claude), Gemini key, vector index, evaluation run | |
-| | **Total** | |
+| 28.09.2026 | Case read-through and first build of engine, website, evaluation script and Slack bot (built with Claude) | 0,25 |
+| 28.09.2026 | Gemini key, vector index, evaluation run, GitHub, Streamlit deploy (including fixing the main file setting), Slack workspace, app, bot test and invitation | 1,75 |
+| | **Total** | **2** |
 
 ## Cost
 
