@@ -1,6 +1,6 @@
 """Company Policy Assistant: compares three ways of answering policy questions.
 
-Run locally:  py -m streamlit run app.py
+Run locally:  py -m streamlit run streamlit_app.py
 """
 import csv
 from pathlib import Path

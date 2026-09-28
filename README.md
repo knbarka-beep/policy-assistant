@@ -12,7 +12,7 @@ Live site: (add link)
 ## Files
 
 - `policy_engine.py` shared logic for all three methods and the support check
-- `app.py` Streamlit website
+- `streamlit_app.py` Streamlit website
 - `build_index.py` builds `data/policy_index.json` (Gemini embeddings)
 - `evaluate.py` runs the 26 test questions in `data/eval_questions.csv` and writes `results/`
 - `slack_bot.py` Slack bot (runs locally, Socket Mode)
@@ -26,7 +26,7 @@ py -m pip install -r requirements.txt
 copy .streamlit\secrets.toml.example .streamlit\secrets.toml   (then paste your keys)
 py build_index.py
 py evaluate.py
-py -m streamlit run app.py
+py -m streamlit run streamlit_app.py
 py slack_bot.py
 ```
 
